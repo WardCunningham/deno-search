@@ -1,7 +1,9 @@
 // https://docs.deno.com/runtime/fundamentals/http_server/
 // https://docs.deno.com/examples/http_server_files/
 
+import { pages } from "./pages.js";
 const flag = await Deno.readFile("./favicon.png");
+
 const typejson = {
   "content-type": "application/json; charset=utf-8",
   "Access-Control-Allow-Origin": "*",
@@ -12,25 +14,6 @@ const typepng = {
 };
 const typetext = {
   "Access-Control-Allow-Origin": "*",
-};
-
-const pages = {
-  "Welcome Visitors": [
-    "Pages about us.",
-    { type: "paragraph", id: "63ad2e58eecdd9e5", text: "[[Cunningham, Ward]]" },
-    "Pages where we do and share.",
-    { type: "paragraph", id: "05e2fa92643677ca", text: "[[Date Today]]" },
-  ],
-  "Cunningham, Ward": [
-    "I've created this site as a sample read-only server.",
-    "See source, [https://github.com/WardCunningham/deno-search github].",
-  ],
-  "Date Today": [
-    "Here we show some dynamic content from the server, the date today.",
-    () => new Date().toLocaleString(),
-    "And we can send messages back to the server.",
-    () => prompt("What's Your Good News"),
-  ],
 };
 
 const asSlug = (title) =>
@@ -52,7 +35,8 @@ Deno.serve((req) => {
   if (url.pathname == "/system/sitemap.json")
     return new Response(sitemap(), { headers: typejson });
   const slug = url.pathname.match(/^\/([a-z-]+)\.json$/);
-  if (slug && titles.has(slug[1])) return page(slug[1]);
+  if (slug && titles.has(slug[1]))
+    return new Response(payload(slug[1]), { headers: typejson });
   console.log({ req, url });
   return new Response("Not Foud", { status: 404, headers: typetext });
 });
@@ -68,14 +52,13 @@ function sitemap() {
   return JSON.stringify(infos);
 }
 
-function page(slug) {
+function payload(slug) {
   const title = titles.get(slug);
   const story = format(pages[title]);
   const journal = [
     { type: "create", date: Date.now(), item: { title, story } },
   ];
-  const payload = JSON.stringify({ title, story, journal });
-  return new Response(payload, { headers: typejson });
+  return JSON.stringify({ title, story, journal });
 }
 
 function format(items) {
@@ -94,24 +77,6 @@ function format(items) {
   };
   const withid = (item) =>
     Object.assign(item, { id: (Math.random() * 10000000000000000).toFixed(0) });
-  return items.map(asitem).map(withid);
-}
 
-function prompt(what) {
-  return {
-    type: "html",
-    text: `<form
-      action="http://localhost:8000/prompt/"
-      style="background-color:#eee; padding:15px;">
-    ${what}<br><br>
-    <input
-      name=title
-      size=50
-      placeholder="your answer here"><br>
-    <input
-      type=submit
-      value=ok>
-    </center>
-    </form>`,
-  };
+  return items.map(asitem).map(withid);
 }
