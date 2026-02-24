@@ -15,21 +15,32 @@ const typetext = {
 };
 
 const pages = {
-  "welcome-visitors": [
+  "Welcome Visitors": [
     "Pages about us.",
-    { type: "paragraph", id: "63ad2e58eecdd9e5", text: "[[Ward]]" },
+    { type: "paragraph", id: "63ad2e58eecdd9e5", text: "[[Cunningham, Ward]]" },
     "Pages where we do and share.",
     { type: "paragraph", id: "05e2fa92643677ca", text: "[[Date Today]]" },
   ],
-  ward: [
+  "Cunningham, Ward": [
     "I've created this site as a sample read-only server.",
     "See source, [https://github.com/WardCunningham/deno-search github].",
   ],
-  "date-today": [
+  "Date Today": [
     "Here we show some dynamic content from the server, the date today.",
     () => new Date().toLocaleString(),
+    "And we can send messages back to the server.",
+    () => prompt("What's Your Good News"),
   ],
 };
+
+const asSlug = (title) =>
+  title
+    .replace(/\s/g, "-")
+    .replace(/[^A-Za-z0-9-]/g, "")
+    .toLowerCase();
+const titles = new Map(
+  Object.keys(pages).map((title) => [asSlug(title), title]),
+);
 
 Deno.serve((req) => {
   const url = new URL(req.url);
@@ -38,14 +49,28 @@ Deno.serve((req) => {
     return new Response("Unsupported", { status: 500, headers: typetext });
   if (url.pathname == "/favicon.png")
     return new Response(flag, { headers: typepng });
+  if (url.pathname == "/system/sitemap.json")
+    return new Response(sitemap(), { headers: typejson });
   const slug = url.pathname.match(/^\/([a-z-]+)\.json$/);
-  if (slug && slug[1] in pages) return page(slug[1]);
+  if (slug && titles.has(slug[1])) return page(slug[1]);
+  console.log({ req, url });
   return new Response("Not Foud", { status: 404, headers: typetext });
 });
 
+function sitemap() {
+  const date = Date.now();
+  const slugs = [...titles.keys()];
+  const infos = slugs.map((slug) => {
+    const title = titles.get(slug);
+    const synopsis = pages[title][0];
+    return { slug, title, date, synopsis };
+  });
+  return JSON.stringify(infos);
+}
+
 function page(slug) {
-  const title = slug.replaceAll("-", " ");
-  const story = format(pages[slug]);
+  const title = titles.get(slug);
+  const story = format(pages[title]);
   const journal = [
     { type: "create", date: Date.now(), item: { title, story } },
   ];
@@ -70,4 +95,23 @@ function format(items) {
   const withid = (item) =>
     Object.assign(item, { id: (Math.random() * 10000000000000000).toFixed(0) });
   return items.map(asitem).map(withid);
+}
+
+function prompt(what) {
+  return {
+    type: "html",
+    text: `<form
+      action="http://localhost:8000/prompt/"
+      style="background-color:#eee; padding:15px;">
+    ${what}<br><br>
+    <input
+      name=title
+      size=50
+      placeholder="your answer here"><br>
+    <input
+      type=submit
+      value=ok>
+    </center>
+    </form>`,
+  };
 }
