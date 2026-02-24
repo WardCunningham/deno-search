@@ -35,6 +35,9 @@ Deno.serve((req) => {
     return new Response(flag, { headers: typepng });
   if (url.pathname == "/system/sitemap.json")
     return new Response(sitemap(), { headers: typejson });
+  const location = `//fed.wiki/${url.host}/welcome-visitors`;
+  if (url.pathname == "/")
+    return new Response("", { status: 307, headers: { location } });
   const slug = url.pathname.match(/^\/([a-z-]+)\.json$/);
   if (slug && titles.has(slug[1]))
     return new Response(payload(slug[1]), { headers: typejson });

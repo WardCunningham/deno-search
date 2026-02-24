@@ -10,12 +10,12 @@ Eventually we will provide a hackers guide for those with substantial computatio
 
 - [x] Serve page json from an in-memory encoding.
 - [x] Serve favicon.png used for protocol sensing.
-- [x] Serve an elemtary sitemap.json to enage search and twins.
-- [ ] Handle froms expressed with the HTML plugin.
-- [ ] Redirect home page queries to fed.wiki for client support.
+- [x] Serve an elementary sitemap.json to enage search and twins.
+- [ ] Handle forms expressed with the HTML plugin.
+- [x] Redirect home page queries to fed.wiki for client support.
 - [ ] Test Deno Deploy based hosting within their free tier.
 - [ ] Build small datasets as asset files.
-- [ ] Test Deno KV store for scrap data.
+- [ ] Test Deno KV store for scrape data.
 - [ ] Test form based queries of KV data.
 - [ ] Test building aspect graphs for viewing with Solo.
 - [ ] Test sourcing/sinking data with Mech blocks.
