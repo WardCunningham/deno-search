@@ -1,3 +1,5 @@
+import * as stats from "./stats.js";
+
 export const pages = {
   "Welcome Visitors": [
     "Pages about us.",
@@ -10,10 +12,12 @@ export const pages = {
     "See source, [https://github.com/WardCunningham/deno-search github].",
   ],
   "Date Today": [
-    "Here we show some dynamic content from the server, the date today.",
+    "Showing dynamic content from the server, the date today.",
     () => new Date().toLocaleString(),
-    "And we can send messages back to the server.",
+    "And we hope to send messages back to the server.",
     () => prompt("What's Your Good News"),
+    "That will keep us informed as to what it does.",
+    () => list(stats.logs),
   ],
 };
 
@@ -34,4 +38,10 @@ function prompt(what) {
     </center>
     </form>`,
   };
+}
+
+function list(lines) {
+  const type = "html";
+  const text = `<pre>${lines.join("\n")}</pre>`;
+  return { type, text };
 }

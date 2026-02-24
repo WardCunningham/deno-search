@@ -2,6 +2,7 @@
 // https://docs.deno.com/examples/http_server_files/
 
 import { pages } from "./pages.js";
+import * as stats from "./stats.js";
 const flag = await Deno.readFile("./favicon.png");
 
 const typejson = {
@@ -27,7 +28,7 @@ const titles = new Map(
 
 Deno.serve((req) => {
   const url = new URL(req.url);
-  console.log(new Date().toLocaleString(), req.method, url.pathname);
+  stats.log(new Date().toLocaleString(), req.method, url.pathname);
   if (req.method != "GET")
     return new Response("Unsupported", { status: 500, headers: typetext });
   if (url.pathname == "/favicon.png")
