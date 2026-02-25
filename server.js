@@ -45,7 +45,7 @@ Deno.serve((req) => {
   return new Response("Not Foud", { status: 404, headers: typetext });
 });
 
-function sitemap() {
+export function sitemap() {
   const date = Date.now();
   const slugs = [...titles.keys()];
   const infos = slugs.map((slug) => {
@@ -65,7 +65,7 @@ function payload(slug) {
   return JSON.stringify({ title, story, journal });
 }
 
-function format(items) {
+export function format(items) {
   const asitem = (item) => {
     const kind = typeof item;
     switch (kind) {
