@@ -14,6 +14,11 @@ Note: recent releases of Chrome will block access to localhost. Try a different 
 
 <img width="705" height="605" alt="image" src="https://github.com/user-attachments/assets/467cf9dd-7555-4ed5-9b85-29b84399fa48" />
 
+Run unit tests with required permissions.
+```
+deno test --allow-read --allow-net
+```
+
 # Plan
 We are happy to hear suggestions in our regular federated wiki video conferences.
 We won't be looking for issues or pull requests just yet.
