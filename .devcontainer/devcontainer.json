@@ -1,5 +1,6 @@
 {
   "features": {
     "ghcr.io/devcontainers-community/features/deno": {}
-  }
+  },
+  "postCreateCommand": "touch /workspaces/thing"
 }
